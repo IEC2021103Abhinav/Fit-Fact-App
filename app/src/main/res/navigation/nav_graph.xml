@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/setupFragment">
+<!--    nav graph is used for specify the transitions between all the fragments-->
+<!--    here global action define means we can do that action from any frag in our app-->
+<!--    launchsingleTop means-->
+    <action android:id="@+id/action_global_trackingFragment"
+        app:destination="@id/trackingFragments"
+        app:launchSingleTop="true"/>
+<!--        if an instance of the activity already exists at  the top of the current task in the launch mode
+no,new instance will be generated-->
+
+
+    <fragment
+        android:id="@+id/runFragment"
+        android:name="com.androiddevs.Fitfact.ui.fragments.RunFragment"
+        android:label="RunFragment" >
+        <action
+            android:id="@+id/action_runFragment_to_trackingFragments2"
+            app:destination="@id/trackingFragments" />
+    </fragment>
+    <fragment
+        android:id="@+id/setupFragment"
+        android:name="com.androiddevs.Fitfact.ui.fragments.SetupFragment"
+        android:label="SetupFragment" >
+        <action
+            android:id="@+id/action_setupFragment_to_runFragment"
+            app:destination="@id/runFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="com.androiddevs.Fitfact.ui.fragments.StatisticsFragment"
+        android:label="StatisticsFragment" />
+    <fragment
+        android:id="@+id/trackingFragments"
+        android:name="com.androiddevs.Fitfact.ui.fragments.TrackingFragments"
+        android:label="TrackingFragments" >
+        <action
+            android:id="@+id/action_trackingFragments_to_runFragment2"
+            app:destination="@id/runFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.androiddevs.Fitfact.ui.fragments.SettingsFragment"
+        android:label="SettingsFragment" />
+</navigation>

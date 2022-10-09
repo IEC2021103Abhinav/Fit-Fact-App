@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RunningApp</string>
+    <string name="app_name">Fit-Fact</string>
     <string-array name="filter_options">
         <item>Date</item>
         <item>Running Time</item>
@@ -7,5 +7,6 @@
         <item>Average Speed</item>
         <item>Calories Burned</item>
     </string-array>
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">ENTER YOUR API KEY HERE</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDerqeCi3t9TNhGmgMRFS3DUHdE9WA-GI8</string>
+    <string name="cancel_run">Cancel Run</string>
 </resources>

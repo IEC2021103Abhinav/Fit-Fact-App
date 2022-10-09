@@ -29,7 +29,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etName"
-            android:layout_width="match_parent"
+            android:layout_width="264dp"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Your Name"
@@ -47,10 +47,27 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etWeight"
-            android:layout_width="wrap_content"
+            android:layout_width="174dp"
             android:layout_height="wrap_content"
-            android:hint="Your Weight"
             android:ems="10"
+            android:hint="Your Weight"
+            android:inputType="numberDecimal" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilHeight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="@+id/tilWeight"
+        app:layout_constraintTop_toBottomOf="@+id/tilWeight">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etHeight"
+            android:layout_width="174dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Your Height"
             android:inputType="numberDecimal" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -65,6 +82,16 @@
         app:layout_constraintBottom_toBottomOf="@+id/tilWeight"
         app:layout_constraintLeft_toRightOf="@id/tilWeight"
         app:layout_constraintTop_toTopOf="@+id/tilWeight" />
+    <TextView
+        android:id="@+id/tvHeight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="cm"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tilHeight"
+        app:layout_constraintLeft_toRightOf="@id/tilHeight"
+        app:layout_constraintTop_toTopOf="@+id/tilHeight" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -81,7 +108,7 @@
             android:id="@+id/tvContinue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Continue"
+            android:text="Start"
             android:textColor="@color/colorAccent"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
