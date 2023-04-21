@@ -42,7 +42,7 @@ typealias Polyline=MutableList<LatLng>
 typealias Polylines=MutableList<Polyline>
 @AndroidEntryPoint
 class TrackingService:LifecycleService() {
-//    whenever we got new location by user then we can simply react to those changes in our tracking frag
+    //    whenever we got new location by user then we can simply react to those changes in our tracking frag
 //    to observe the changes in tracking frag we have live data objects in companion objects
 //    and draw the lines in our map view
     var isFirstRun=true
@@ -52,14 +52,14 @@ class TrackingService:LifecycleService() {
     private val timeRunInSecond=MutableLiveData<Long>()
     @Inject
     lateinit var baseNotificationBuilder: NotificationCompat.Builder
-//    to update our notification with current time ,to do that just post new notification with same id that why i create baseNo...Builder
+    //    to update our notification with current time ,to do that just post new notification with same id that why i create baseNo...Builder
 //    which will  hold the configuration of every of our notifications
     lateinit var curNotificationBuilder: NotificationCompat.Builder
     companion object{
-//        here we create live data objects
+        //        here we create live data objects
         val isTracking=MutableLiveData<Boolean>()
         val timeRunInMillis=MutableLiveData<Long>()
-//        here saved the location
+        //        here saved the location
         val pathPoints=MutableLiveData<Polylines>()
 //        list of list of several co-ordinates
 //        latlong means longitude and longitude.
@@ -73,7 +73,7 @@ class TrackingService:LifecycleService() {
         timeRunInSecond.postValue(0L)
         timeRunInMillis.postValue(0L)
     }
-//    here the tracking service is inherit from life cycleService()
+    //    here the tracking service is inherit from life cycleService()
 //    we need to observe the live data objects inside of this service class and the observe function of
 //    live data objects needs the life cycle owner and if we don't specify the lifecycle service we can
 //    not pass its instance of service to observe func's owner
@@ -83,16 +83,17 @@ class TrackingService:LifecycleService() {
 //    that we want to be accessible from outside and  put them in an companion object so,fragments can access
 //    second-->service to be make bound service so,service acts like a server and clients can binds to it
 //    here clients are our fragments
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate() {
         super.onCreate()
 //    at start with baseNoti..Builder but for change We have to do CurNo...Builder
         curNotificationBuilder=baseNotificationBuilder
         postInitialValues()
         fusedLocationProviderClient= FusedLocationProviderClient(this)
-        isTracking.observe(this, Observer {
+        isTracking.observe(this) {
             updateLocationTracking(it)
             updateNotificationTrackingstate(it)
-    })
+        }
     }
     private fun killService(){
         serviceKilled=true
@@ -102,44 +103,44 @@ class TrackingService:LifecycleService() {
         stopForeground(true)
         stopSelf()
     }
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
 //    this fun is call whenever we send a command(intent attached with some activity) to our service
 //    in our case three potential action which are to sent to our service
 //    an action to start it ,an action to resume it,in action to pause it
 //    intent get from this func check first
-    intent?.let{
-        when(it.action){
-//            depending on the action we can now act to those fun
-            ACTION_START_OR_RESUME_SERVICE->{
-                if(isFirstRun){
-                    startForegroundService()
-                    isFirstRun=false
-                }else {
-                    Timber.d("Resuming service...")
-                    startTimer()
+        intent.let{
+            when(it.action){
+                //            depending on the action we can now act to those fun
+                ACTION_START_OR_RESUME_SERVICE->{
+                    if(isFirstRun){
+                        startForegroundService()
+                        isFirstRun=false
+                    }else {
+                        Timber.d("Resuming service...")
+                        startTimer()
+                    }
+                }
+                ACTION_PAUSE_SERVICE->{
+                    Timber.d("Paused service")
+                    pauseService()
+                }
+                ACTION_STOP_SERVICE->{
+                    Timber.d("stopped service")
+                    killService()
+                    //                Timber comes in to reduce the tedious task by automatically generating the tags
+                    //                and later removing the logs from the generated apks
                 }
             }
-            ACTION_PAUSE_SERVICE->{
-                Timber.d("Paused service")
-                pauseService()
-            }
-            ACTION_STOP_SERVICE->{
-                Timber.d("stopped service")
-                killService()
-//                Timber comes in to reduce the tedious task by automatically generating the tags
-//                and later removing the logs from the generated apks
-            }
+            //        but we have also function in our tracking frag that sends the intent to our service
+            //        with the commands attached
         }
-//        but we have also function in our tracking frag that sends the intent to our service
-//        with the commands attached
-    }
         return super.onStartCommand(intent, flags, startId)
     }
-//    fun that starts the timer here and also trigger our service
+    //    fun that starts the timer here and also trigger our service
     private var isTimerEnabled=false
-//    the time where we begin the run and time between each start and pause
+    //    the time where we begin the run and time between each start and pause
     private var lapTime=0L
-//    all lap run sum timeRun
+    //    all lap run sum timeRun
     private var timeRun=0L
     private var timeStarted=0L
     private var lastSecondTimeStamp=0L
@@ -173,6 +174,7 @@ class TrackingService:LifecycleService() {
         isTracking.postValue(false)
         isTimerEnabled=false
     }
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun updateNotificationTrackingstate(isTracking: Boolean)
     {
 //        need to specify our action text for action of notification which is  either pause or resume
@@ -181,12 +183,12 @@ class TrackingService:LifecycleService() {
             val pauseIntent=Intent(this,TrackingService::class.java).apply {
                 action= ACTION_PAUSE_SERVICE
             }
-            PendingIntent.getService(this,1,pauseIntent, FLAG_UPDATE_CURRENT)
+            PendingIntent.getService(this,1,pauseIntent, PendingIntent.FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
         }else{
             val resumeIntent= Intent(this,TrackingService::class.java).apply {
                 action= ACTION_START_OR_RESUME_SERVICE
             }
-            PendingIntent.getService(this,2,resumeIntent, FLAG_UPDATE_CURRENT)
+            PendingIntent.getService(this,2,resumeIntent, PendingIntent.FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
         }
         val notificationManager=getSystemService(Context.NOTIFICATION_SERVICE)as NotificationManager
 //        the way to remove all actions before we update the notification with new action
@@ -210,7 +212,7 @@ class TrackingService:LifecycleService() {
             if(TrackingUtility.hasLocationPermission(this)){  //if allow to permission
 //                we need location request
                 val request = com.google.android.gms.location.LocationRequest().apply {
-                   interval = LOCATION_UPDATE_INTERVAL
+                    interval = LOCATION_UPDATE_INTERVAL
 //                    for how much interval of time  we want tha location updates like after 5sec we ant updates
                     fastestInterval= FASTEST_LOCATION_INTERVAL
 //                    we want fast 2sec interval
@@ -232,7 +234,7 @@ class TrackingService:LifecycleService() {
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
             if(isTracking.value!!){
-                result?.locations?.let { locations->
+                result.locations.let { locations->
                     for(location in locations){
                         addPathPoint(location)
                         Timber.d("New Location:${location.latitude},${location.longitude}")
@@ -245,18 +247,18 @@ class TrackingService:LifecycleService() {
 //        add the co-ordinates to our last polylines of polylines list
 //        here we check the location which is null is equal to null
 //        here we have to convert the lat and lang
-        location?.let {
-//            here we have to change the co-ordinates of location to lat long
+        location.let {
+            //            here we have to change the co-ordinates of location to lat long
             val  pos=LatLng(location.latitude,location.longitude)
-//            add the position
+            //            add the position
             pathPoints.value?.apply{
                 last().add(pos)
-//                add at the last polylines
+                //                add at the last polylines
                 pathPoints.postValue(this)
             }
         }
     }
-//    here our next step is to find the location callback
+    //    here our next step is to find the location callback
 //    add co-ordinates of the point on map in the polyline list
     private fun addEmptyPolyline()= pathPoints.value?.apply{
 //    add empty list of latlong co-ordinates at the end of polylines list because we can pause our tracking or resume
@@ -273,7 +275,7 @@ class TrackingService:LifecycleService() {
         addEmptyPolyline()
         isTracking.postValue(true)
         val notificationManager=getSystemService(Context.NOTIFICATION_SERVICE)
-        as NotificationManager
+                as NotificationManager
 //        notification manager is a system service of android frame work that we need whenever we wnt to show
 //        notification so,we get reference to system service and then crete our notification channel locally in
 //        app
@@ -300,7 +302,7 @@ class TrackingService:LifecycleService() {
 
 
     }
-//    private fun getMainActivityPendingIntent()=PendingIntent.getActivity(
+    //    private fun getMainActivityPendingIntent()=PendingIntent.getActivity(
 //        this,
 //        0,
 //        Intent(this,MainActivity::class.java).also {

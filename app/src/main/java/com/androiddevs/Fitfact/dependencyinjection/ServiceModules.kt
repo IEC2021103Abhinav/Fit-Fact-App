@@ -1,10 +1,11 @@
 package com.androiddevs.Fitfact.dependencyinjection
 
-import android.app.Notification
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.provider.SyncStateContract
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.androiddevs.Fitfact.R
 import com.androiddevs.Fitfact.other.constants
@@ -22,12 +23,14 @@ import dagger.hilt.android.scopes.ServiceScoped
 @InstallIn(ServiceComponent::class)
 //how long the dependencies in this service module is present--->@InstallIn
 object ServiceModules {
+    @SuppressLint("VisibleForTests")
     @ServiceScoped
     @Provides
     fun provideFusedLocationProviderClient(
         @ApplicationContext app:Context
 //    as here we want that this func have single scoped so service scoped
     )=FusedLocationProviderClient(app)
+    @RequiresApi(Build.VERSION_CODES.M)
     @ServiceScoped
     @Provides
     fun provideMainActivityPendingIntent(
@@ -38,8 +41,8 @@ object ServiceModules {
         Intent(app, MainActivity::class.java).also {
             it.action= constants.ACTION_SHOW_TRACKING_FRAGMENTS
         },
-        PendingIntent.FLAG_UPDATE_CURRENT
-    )
+        PendingIntent.FLAG_IMMUTABLE or  PendingIntent.FLAG_UPDATE_CURRENT
+    )!!
     @ServiceScoped
     @Provides
     fun provideBaseNotificationBuilder(
